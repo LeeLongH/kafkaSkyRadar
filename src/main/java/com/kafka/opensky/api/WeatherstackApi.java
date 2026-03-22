@@ -21,17 +21,17 @@ public class WeatherstackApi {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    // get visibility in km from Weatherstack
     public double getVisibility(double latitude, double longitude) {
 
         long now = System.currentTimeMillis();
 
-        // ✅ Return cached value if still valid
         if (cachedVisibility != null && (now - lastFetchTime) < CACHE_DURATION) {
-            System.out.println("Using cached visibility: " + cachedVisibility);
+            //System.out.println("Using cached visibility: " + cachedVisibility);
             return cachedVisibility;
         }
+
         double visibility;
+
         try {
             // Construct URL with latitude and longitude
             String url = apiUrl + "?access_key=" + accessKey + "&query=" + latitude + "," + longitude;
@@ -46,15 +46,17 @@ public class WeatherstackApi {
             }else {
 
                 System.out.println("Visibility not found in response");
-                visibility = 19.0;
+                visibility = 30.0;
             }
 
         } catch (Exception e) {
             System.out.println("Weatherstack api error: " + e.getMessage());
-            visibility = 18.0;
+            visibility = 30;
         }
+
         cachedVisibility = visibility;
         lastFetchTime = now;
-        return visibility / 2;
+
+        return visibility;
     }
 }

@@ -18,7 +18,6 @@ public class OpenSkyAuthService {
     // for HTTP requests
     private final RestTemplate restTemplate = new RestTemplate();
 
-    // Contact OpenSky and return a token
     public String getAccessToken(){
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);

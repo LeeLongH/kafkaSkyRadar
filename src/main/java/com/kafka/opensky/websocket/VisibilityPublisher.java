@@ -13,8 +13,6 @@ public class VisibilityPublisher {
     }
 
     public void sendVisibility(double visibilityKm) {
-        // fetch visibility once
-        // send once to the browser
         template.convertAndSend("/topic/visibility", visibilityKm);
     }
 }

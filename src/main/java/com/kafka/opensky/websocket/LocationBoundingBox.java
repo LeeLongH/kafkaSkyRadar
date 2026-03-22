@@ -40,7 +40,7 @@ public class LocationBoundingBox {
             maxLon = lonRad + deltaLon;
 
         } else {
-            // Near poles → longitude is irrelevant
+            // longitude is irrelevant near poles
             minLat = Math.max(minLat, Math.toRadians(-90));
             maxLat = Math.min(maxLat, Math.toRadians(90));
             minLon = Math.toRadians(-180);
@@ -57,12 +57,10 @@ public class LocationBoundingBox {
         lomin = (lomin + 540) % 360 - 180;
         lomax = (lomax + 540) % 360 - 180;
 
-        // 🔍 DEBUG LOGS
-        System.out.println("====== BOUNDING BOX DEBUG ======");
-        System.out.println("Center: " + latitude + ", " + longitude);
-        System.out.println("Radius (km): " + visibilityDistanceKm);
-        System.out.println("Lat range: " + lamin + " → " + lamax);
-        System.out.println("Lon range: " + lomin + " → " + lomax);
+        //System.out.println("Center: " + latitude + ", " + longitude);
+        //System.out.println("Radius (km): " + visibilityDistanceKm);
+        //System.out.println("Lat range: " + lamin + " → " + lamax);
+        //System.out.println("Lon range: " + lomin + " → " + lomax);
 
         String url = String.format(Locale.US,
                 "%s?lamin=%.6f&lamax=%.6f&lomin=%.6f&lomax=%.6f",
@@ -70,7 +68,7 @@ public class LocationBoundingBox {
                 lamin, lamax, lomin, lomax
         );
 
-        System.out.println("Generated URL: " + url);
+        //System.out.println("Generated URL: " + url);
 
         return url;
     }

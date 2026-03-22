@@ -1,30 +1,29 @@
 let locationReady = false;
+// Default location
 let myLat = 46.056946;
 let myLng = 14.505751;
 let markers = {};
 let visibilityCircle = null;
 
-// Initialize map
+// Init map
 var map = L.map('map').setView([myLat, myLng], 6);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-// Helper: create plane icon
 function createPlaneIcon(rotation) {
     return L.divIcon({
-        html: `<img src="/images/plane2.png" style="width:40px; transform: rotate(${rotation}deg);">`,
+        html: `<img src="/images/plane.png" style="width:40px; transform: rotate(${rotation}deg);">`,
         className: '',
         iconSize: [40, 40],
         iconAnchor: [20, 20]
     });
 }
 
-// Check if plane is outside visibility circle
 function is_plane_outside_circle(lat, lng) {
     if (!visibilityCircle) {
-        console.log("No circle yet → hiding plane");
+        console.log("No circle yet");
         return true;
     }
 
@@ -60,20 +59,11 @@ if (navigator.geolocation) {
 
             map.setView([myLat, myLng], 7);
 
-            // Draw visibility circle once
-            /*const defaultRadiusMeters = 30000; // 30 km
-            visibilityCircle = L.circle([myLat, myLng], {
-                radius: defaultRadiusMeters,
-                color: 'blue',
-                fillColor: '#3f8cff',
-                fillOpacity: 0.2
-            }).addTo(map);*/
-
             locationReady = true;
 
-            // Fetch initial planes inside bounding box from backend
+            //Send user location to BE
             fetch(`/api/location?lat=${myLat}&lng=${myLng}`)
-                .then(res => res.text()) // handle empty response safely
+                .then(res => res.text())
                 .then(text => {
                     if (!text) return [];
                     return JSON.parse(text);
@@ -89,7 +79,6 @@ if (navigator.geolocation) {
                 })
                 .catch(err => console.error("Error fetching planes:", err));
 
-            // Connect WebSocket AFTER location is ready
             initWebSocket();
         },
         function (error) {
@@ -113,7 +102,7 @@ if (navigator.geolocation) {
     alert("Geolocation is not supported by this browser.");
 }
 
-// Initialize WebSocket connection
+// Init WebSocket connection
 function initWebSocket() {
     var socket = new SockJS('/plane-websocket');
     var stompClient = Stomp.over(socket);
@@ -121,7 +110,7 @@ function initWebSocket() {
     stompClient.connect({}, function (frame) {
         console.log("Connected to websocket:", frame);
 
-        // Subscribe to plane updates
+        // Get planes from BE
         stompClient.subscribe('/topic/planes', function (message) {
             const plane = JSON.parse(message.body);
             const latitude = plane[6];
@@ -129,7 +118,7 @@ function initWebSocket() {
             const callsign = plane[1];
             const rotation = plane[10] || 0;
             const height = plane[7];
-            const country = plane[3];
+            const country = plane[2];
 
             if (latitude == null || longitude == null) return;
 
@@ -153,14 +142,14 @@ function initWebSocket() {
             }
         });
 
-        // Subscribe to visibility radius updates
+        // Get visibility from BE
         stompClient.subscribe('/topic/visibility', function (message) {
             const radiusKm = parseFloat(message.body);
 
-            console.log("📡 Received visibility from backend:", radiusKm, "km");
+            console.log("Received visibility from BE:", radiusKm, "km");
 
             if (!visibilityCircle) {
-                console.log("🟢 Creating circle with radius:", radiusKm);
+                console.log("Creating circle with radius:", radiusKm);
 
                 visibilityCircle = L.circle([myLat, myLng], {
                     radius: radiusKm * 1000,
@@ -170,7 +159,7 @@ function initWebSocket() {
                 }).addTo(map);
 
             } else {
-                console.log("🔄 Updating circle radius:", radiusKm);
+                console.log("Updating circle radius:", radiusKm);
 
                 visibilityCircle.setRadius(radiusKm * 1000);
             }

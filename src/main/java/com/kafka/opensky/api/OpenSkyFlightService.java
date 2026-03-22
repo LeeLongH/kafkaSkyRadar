@@ -42,17 +42,15 @@ public class OpenSkyFlightService {
     }
 
 
-    // Spring injects the value from YAML
+    // Spring injects value from YAML
     @Value("${opensky.api-url}")
     private String apiUrl;
 
     @Scheduled(fixedRate = 10000)
     public void fetchFlights(){
 
-        // get token
         String token = authService.getAccessToken();
 
-        // Headers
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
 
@@ -68,14 +66,11 @@ public class OpenSkyFlightService {
 
         double visibilityDistance = weatherstackApi.getVisibility(lat, lng);
 
-
         String boxUrl = boundingBox.buildUrl(lat, lng, visibilityDistance);
-        System.out.println("========== FETCH DEBUG ==========");
-        System.out.println("User lat/lng: " + lat + ", " + lng);
-        System.out.println("Visibility distance (km): " + visibilityDistance);
-        System.out.println("Generated BOX URL: " + boxUrl);
+        //System.out.println("User lat/lng: " + lat + ", " + lng);
+        //System.out.println("Visibility distance (km): " + visibilityDistance);
+        //System.out.println("Generated BOX URL: " + boxUrl);
 
-        // call OpenSky
         ResponseEntity<Map> skyResponse = restTemplate.exchange(
                 boxUrl,
                 HttpMethod.GET,
@@ -90,7 +85,6 @@ public class OpenSkyFlightService {
         List<List<Object>> states = (List<List<Object>>) body.get("states");
         List<Plane> planes = new ArrayList<>();
 
-        System.out.println("Raw OpenSky response keys: " + body.keySet());
         System.out.println("Number of states returned: " + (states != null ? states.size() : 0));
 
         if (states == null) {
@@ -120,9 +114,9 @@ public class OpenSkyFlightService {
 
             planes.add(plane);
         }
+
         visibilityPublisher.sendVisibility(visibilityDistance);
         openSkyResponse.setPlanes(planes);
         producer.sendPlanes(planes);
-
     }
 }
