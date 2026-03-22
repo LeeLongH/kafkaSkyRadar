@@ -1,18 +1,11 @@
 
-Start Kafka manually:
-- cd C:\kafka
-- wsl
-- bin/kafka-server-start.sh config/server.properties
+## ✈️ Real-Time Flight Visibility Tracker
+
+This project is a real-time web application that displays nearby aircraft based on the user's current location and weather visibility conditions. It combines live aviation data, weather data, and streaming technologies to provide an interactive and dynamic map experience.
 
 <img width="2063" height="1343" alt="Kafka-architecture" src="https://github.com/user-attachments/assets/2a00efbe-58ac-4cbf-aaf3-f3f27f724d38" />
 <img width="801" height="807" alt="Screenshot 2026-03-22 100235" src="https://github.com/user-attachments/assets/5dec3798-886e-44b6-908d-087e75de3ac8" />
 
-
----
-
-## ✈️ Real-Time Flight Visibility Tracker
-
-This project is a real-time web application that displays nearby aircraft based on the user's current location and weather visibility conditions. It combines live aviation data, weather data, and streaming technologies to provide an interactive and dynamic map experience.
 
 ---
 
@@ -104,4 +97,13 @@ The system consists of three main parts:
 * Add additonal aircraft details (speed, heading, airline)
 * Drawn plane path
 * Add user control buttons to interact with the map
+
+
+---
+# Start Kafka manually:
+- cd C:\kafka
+- wsl
+- bin/kafka-server-start.sh config/server.properties
+
+
 
