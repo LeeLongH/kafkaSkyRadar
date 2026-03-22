@@ -5,9 +5,9 @@ Start Kafka manually:
 - bin/kafka-server-start.sh config/server.properties
 
 <img width="2063" height="1343" alt="Kafka-architecture" src="https://github.com/user-attachments/assets/2a00efbe-58ac-4cbf-aaf3-f3f27f724d38" />
+---
 <img width="801" height="807" alt="Screenshot 2026-03-22 100235" src="https://github.com/user-attachments/assets/5dec3798-886e-44b6-908d-087e75de3ac8" />
 
-Here’s a clean, professional README-style description you can use for your project:
 
 ---
 
