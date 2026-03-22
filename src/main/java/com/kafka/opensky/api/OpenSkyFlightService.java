@@ -5,6 +5,7 @@ import com.kafka.opensky.model.Plane;
 import com.kafka.opensky.producer.PlaneProducer;
 import com.kafka.opensky.websocket.LocationBoundingBox;
 import com.kafka.opensky.websocket.LocationController;
+import com.kafka.opensky.websocket.VisibilityPublisher;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -29,13 +30,15 @@ public class OpenSkyFlightService {
     private final LocationController locationController;
 
     private final WeatherstackApi weatherstackApi;
+    private final VisibilityPublisher visibilityPublisher;
 
-    public OpenSkyFlightService(OpenSkyAuthService authService, PlaneProducer producer, LocationBoundingBox boundingBox, LocationController locationController, WeatherstackApi weatherstackApi) {
+    public OpenSkyFlightService(OpenSkyAuthService authService, PlaneProducer producer, LocationBoundingBox boundingBox, LocationController locationController, WeatherstackApi weatherstackApi, VisibilityPublisher visibilityPublisher) {
         this.authService = authService;
         this.producer = producer;
         this.boundingBox = boundingBox;
         this.locationController = locationController;
         this.weatherstackApi = weatherstackApi;
+        this.visibilityPublisher = visibilityPublisher;
     }
 
 
@@ -84,7 +87,6 @@ public class OpenSkyFlightService {
         OpenSkyResponse openSkyResponse = new OpenSkyResponse();
         openSkyResponse.setTime(((Number) body.get("time")).longValue());
 
-
         List<List<Object>> states = (List<List<Object>>) body.get("states");
         List<Plane> planes = new ArrayList<>();
 
@@ -118,6 +120,7 @@ public class OpenSkyFlightService {
 
             planes.add(plane);
         }
+        visibilityPublisher.sendVisibility(visibilityDistance);
         openSkyResponse.setPlanes(planes);
         producer.sendPlanes(planes);
 

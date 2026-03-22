@@ -61,13 +61,13 @@ if (navigator.geolocation) {
             map.setView([myLat, myLng], 7);
 
             // Draw visibility circle once
-            const defaultRadiusMeters = 30000; // 30 km
+            /*const defaultRadiusMeters = 30000; // 30 km
             visibilityCircle = L.circle([myLat, myLng], {
                 radius: defaultRadiusMeters,
                 color: 'blue',
                 fillColor: '#3f8cff',
                 fillOpacity: 0.2
-            }).addTo(map);
+            }).addTo(map);*/
 
             locationReady = true;
 
@@ -156,9 +156,24 @@ function initWebSocket() {
         // Subscribe to visibility radius updates
         stompClient.subscribe('/topic/visibility', function (message) {
             const radiusKm = parseFloat(message.body);
-            if (!visibilityCircle) return;
-            visibilityCircle.setRadius(radiusKm * 1000);
-            console.log("Visibility radius updated to", radiusKm, "km");
+
+            console.log("📡 Received visibility from backend:", radiusKm, "km");
+
+            if (!visibilityCircle) {
+                console.log("🟢 Creating circle with radius:", radiusKm);
+
+                visibilityCircle = L.circle([myLat, myLng], {
+                    radius: radiusKm * 1000,
+                    color: 'blue',
+                    fillColor: '#3f8cff',
+                    fillOpacity: 0.2
+                }).addTo(map);
+
+            } else {
+                console.log("🔄 Updating circle radius:", radiusKm);
+
+                visibilityCircle.setRadius(radiusKm * 1000);
+            }
         });
     });
 }
